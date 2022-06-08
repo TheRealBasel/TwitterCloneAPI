@@ -44,7 +44,7 @@ class AuthController extends Controller
             'success' => true,
             'data' => [
                 'user' => $user,
-                'token' => $user->createToken('courses_api')->plainTextToken,
+                'token' => $user->createToken('twitter_api')->plainTextToken,
             ],
             'message' => 'You have registerd successfully.'
         ], 201 );
@@ -64,7 +64,7 @@ class AuthController extends Controller
                 'message' => 'Successfully Logged in',
                 'data' => [
                     'user' => new UserResource($user),
-                    'token' => $user->createToken('courses_api')->plainTextToken,
+                    'token' => $user->createToken('twitter_api')->plainTextToken,
                 ]
             ], 200 );
         }

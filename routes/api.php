@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FollowingController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\PostLikeController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -17,15 +20,24 @@ use App\Http\Controllers\FollowingController;
 |
 */
 
-Route::middleware('auth:sanctum')->group( function () {
-    Route::resource ('user', UserController::class);
-    // Route::resource ('follow', FollowingController::class);
-    Route::post('follow', [FollowingController::class, 'follow']);
-    Route::delete('follow', [FollowingController::class, 'unfollow']);
-    Route::get('followers/{id}', [FollowingController::class, 'followers']);
-    Route::get('following/{id}', [FollowingController::class, 'followings']);
+Route::middleware('auth:sanctum')->group( 
+    function () {
+        Route::resource ('user', UserController::class);
 
-});
+        /* Following Routes */
+        Route::post('follow', [FollowingController::class, 'follow']);
+        Route::delete('follow', [FollowingController::class, 'unfollow']);
+        Route::get('followers/{id}', [FollowingController::class, 'followers']);
+        Route::get('following/{id}', [FollowingController::class, 'followings']);
+
+        /* Posts Routes */
+        Route::resource ('post', PostController::class);
+        Route::get('likes/{id}', [PostLikeController::class, 'show']);
+        Route::post('like', [PostLikeController::class, 'store']);
+        Route::delete('like', [PostLikeController::class, 'destroy']);
+
+    }
+);
 
 Route::prefix('/auth')->group(
     function () {

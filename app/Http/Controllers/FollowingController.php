@@ -17,25 +17,22 @@ class FollowingController extends Controller
     }
 
     public function followers ($id){
-
         $followers_ids = Following::where('following',$id)->pluck('follower')->toArray();
-        $followers_users = User::find( $followers_ids );
+        $followers_users = User::find( $followers_ids )->pagainte();
         return UserResource::collection($followers_users);
-
     }
 
     public function follow (Request $request){
         $request->validate([
             'following' => ['required', 'exists:users,id'],
-            'follower' => ['required', 'exists:users,id'],
         ]);
 
-        $isAlreadyFollowing = Following::where('following',$request->following)->where('follower', $request->follower)->exists();
+        $isAlreadyFollowing = Following::where('following',$request->following)->where('follower', $request->user()->id)->exists();
         
         if ( !$isAlreadyFollowing ){
             Following::create([
                 'following' => $request->following,
-                'follower' => $request->follower,
+                'follower' => $request->user()->id,
             ]);
             return response()->json([
                 'success' => true
@@ -51,13 +48,16 @@ class FollowingController extends Controller
     public function unfollow (Request $request){
         $request->validate([
             'following' => ['required', 'exists:users,id'],
-            'follower' => ['required', 'exists:users,id'],
         ]);
 
-        Following::where('following',$request->following)->where('follower', $request->follower)->delete();
+        if ( Following::where('following',$request->following)->where('follower', $request->user()->id)->delete() ){
+            return response()->json([
+                'success' => true
+            ], 200);
+        }
         
         return response()->json([
-            'success' => true
-        ], 200);
+            'success' => false
+        ], 400);
     }
 }
